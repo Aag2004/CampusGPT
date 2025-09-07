@@ -8,3 +8,6 @@ transformers
 sentence-transformers
 pypdf
 python-dotenv
+langchain-google-genai
+fastapi
+uvicorn
