@@ -8,17 +8,20 @@ from langchain.memory import ConversationBufferMemory
 load_dotenv()
 hf_token = os.getenv("HF_API_KEY")
 
-# 2️⃣ Connect to the hosted model
+if not hf_token:
+    raise ValueError("⚠️ HF_API_KEY not found in .env file!")
+
+# 2️⃣ Connect to the hosted HuggingFace model
 llm = HuggingFaceEndpoint(
     repo_id="mistralai/Mistral-7B-Instruct-v0.2",
     huggingfacehub_api_token=hf_token,
-    max_new_tokens=100  # Limit output length
+    max_new_tokens=150,   # controls output length
 )
 
 # 3️⃣ Wrap model for chat
 chat_model = ChatHuggingFace(llm=llm)
 
-# 4️⃣ Set up memory to remember conversation
+# 4️⃣ Set up memory (remembers conversation history)
 memory = ConversationBufferMemory()
 
 # 5️⃣ Create a conversational pipeline
@@ -27,13 +30,3 @@ conversation = ConversationChain(
     memory=memory,
     verbose=False
 )
-
-# 6️⃣ Start chat loop
-print("🤖 Chatbot started! Type 'quit' to exit.\n")
-while True:
-    user_input = input("You: ")
-    if user_input.lower() in ["quit", "exit", "bye"]:
-        print("Bot: Goodbye! 👋")
-        break
-    response = conversation.predict(input=user_input + "keep the solution concise.")
-    print("Bot:", response)
